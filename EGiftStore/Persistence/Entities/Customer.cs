@@ -21,7 +21,7 @@ public partial class Customer
 
     public DateTime CreateDate { get; set; }
 
-    public string LastUpdate { get; set; } = null!;
+    public DateTime LastUpdate { get; set; }
 
     public bool IsActive { get; set; }
 
