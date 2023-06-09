@@ -109,5 +109,41 @@ namespace Service.Implement
             var expire = (await _uow.CustomerRepository.FirstOrDefaultAsync(x => x.Id.Equals(id)) as Customer).ExpireToken;
             return expire != null ? expire : null!;
         }
+
+        public async Task<IActionResult> UpdatePassword(Guid id, string password)
+        {
+            var customer = await _uow.CustomerRepository.FirstOrDefaultAsync(x => x.Id.Equals(id));
+            if (customer != null)
+            {
+                customer.Password = password;
+                return await _uow.SaveChangesAsync() > 0 ? new JsonResult(await GetCustomerById(id)) : new StatusCodeResult(500);
+            }
+            return new StatusCodeResult(400);
+        }
+
+        public async Task<IActionResult> UpdateCustomer(Guid id, CustomerUpdateModel cum)
+        {
+            var customer = await _uow.CustomerRepository.FirstOrDefaultAsync(x => x.Id.Equals(id));
+            if (customer != null)
+            {
+                customer.Address = cum.Address ?? customer.Address;
+                customer.Phone = cum.Phone ?? cum.Phone;
+                customer.Fullname = cum.Fullname ?? customer.Fullname;
+                await _uow.SaveChangesAsync();
+                return new JsonResult(await GetCustomerById(id));
+            }
+            return new StatusCodeResult(400);
+        }
+
+        public async Task<IActionResult> RemoveCustomer(Guid id)
+        {
+            var customer = await _uow.CustomerRepository.FirstOrDefaultAsync(x => x.Id.Equals(id));
+            if (customer != null)
+            {
+                customer.IsActive = false;
+                return await _uow.SaveChangesAsync() > 0 ? new StatusCodeResult(204) : new StatusCodeResult(500);
+            }
+            return new StatusCodeResult(400);
+        }
     }
 }

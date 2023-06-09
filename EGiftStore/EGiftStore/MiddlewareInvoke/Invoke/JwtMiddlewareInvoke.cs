@@ -45,20 +45,23 @@ namespace EGiftStore.MiddlewareInvoke.Invoke
                 }, out SecurityToken tokenHandled);
                 var tokenJwt = (JwtSecurityToken)tokenHandled;
                 var role = tokenJwt.Claims.First(x => x.Type == "role").Value;
+                Guid id = Guid.Parse(tokenJwt.Claims.First(x => x.Type == "id").Value);
                 if (role.Equals(CUSTOMER_ROLE))
                 {
-                    var expire = await customerService.GetExpireToken(Guid.Parse(tokenJwt.Claims.First(x => x.Type == "id").Value));
+                    var expire = await customerService.GetExpireToken(id);
                     if (expire != null)
                     {
+                        context.Items["Id"] = id;
                         context.Items["Expire"] = expire;
                         context.Items["Role"] = CUSTOMER_ROLE;
                     }
                 }
                 else if (role.Equals(ADMIN_ROLE))
                 {
-                    var expire = await adminService.GetExpireToken(Guid.Parse(tokenJwt.Claims.First(x => x.Type == "id").Value));
+                    var expire = await adminService.GetExpireToken(id);
                     if (expire != null)
                     {
+                        context.Items["Id"] = id;
                         context.Items["Expire"] = expire;
                         context.Items["Role"] = ADMIN_ROLE;
                     }

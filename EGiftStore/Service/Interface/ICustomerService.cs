@@ -13,6 +13,8 @@ namespace Service.Interface
         public IActionResult GetCustomers();
         public Task<IActionResult> AcceptCustomer(Guid id);
         public Task<DateTime?> GetExpireToken(Guid id);
-
+        public Task<IActionResult> UpdatePassword(Guid id, string password);
+        public Task<IActionResult> UpdateCustomer(Guid id, CustomerUpdateModel cum);
+        public Task<IActionResult> RemoveCustomer(Guid id);
     }
 }
