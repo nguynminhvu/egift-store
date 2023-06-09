@@ -32,10 +32,11 @@ namespace Service.Implement
             var customer = await _uow.CustomerRepository.FirstOrDefaultAsync(x => x.IsActive && x.Username.Equals(av.Username) && x.Password.Equals(av.Password));
             if (customer != null)
             {
-                return new AuthenticationViewModel
+                customer.ExpireToken = DateTime.Now;
+                return await _uow.SaveChangesAsync() > 0 ? new AuthenticationViewModel
                 {
                     AccessToken = GenerateToken(customer)
-                };
+                } : null!;
             }
             return null!;
         }
@@ -64,9 +65,10 @@ namespace Service.Implement
             return new StatusCodeResult(400);
         }
 
-        public async Task<Customer> GetCustomerById(Guid id)
+        public async Task<CustomerViewModel> GetCustomerById(Guid id)
         {
-            return await _uow.CustomerRepository.FirstOrDefaultAsync(x => x.Id.Equals(id));
+            var customer = await _uow.CustomerRepository.FirstOrDefaultAsync(x => x.Id.Equals(id));
+            return _mapper.Map<CustomerViewModel>(customer);
         }
 
         public string GenerateToken(Customer customer)
@@ -76,6 +78,7 @@ namespace Service.Implement
             {
                 Subject = new System.Security.Claims.ClaimsIdentity(new[] {
                     new Claim("id", customer.Id.ToString()),
+                    new Claim("role", "Customer")
                 }),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Expires = DateTime.Now.AddDays(7)
@@ -88,6 +91,23 @@ namespace Service.Implement
         public IActionResult GetCustomers()
         {
             return new JsonResult(_uow.CustomerRepository.GetAll().ProjectTo<CustomerViewModel>(_mapper.ConfigurationProvider));
+        }
+
+        public async Task<IActionResult> AcceptCustomer(Guid id)
+        {
+            var customer = await _uow.CustomerRepository.FirstOrDefaultAsync(x => x.Id.Equals(id));
+            if (customer != null)
+            {
+                customer.IsActive = true;
+                return await _uow.SaveChangesAsync() > 0 ? new StatusCodeResult(204) : new StatusCodeResult(500);
+            }
+            return new StatusCodeResult(400);
+        }
+
+        public async Task<DateTime?> GetExpireToken(Guid id)
+        {
+            var expire = (await _uow.CustomerRepository.FirstOrDefaultAsync(x => x.Id.Equals(id)) as Customer).ExpireToken;
+            return expire != null ? expire : null!;
         }
     }
 }

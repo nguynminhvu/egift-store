@@ -9,9 +9,11 @@ public partial class Admin
 
     public string Username { get; set; } = null!;
 
-    public string? Password { get; set; }
+    public string Password { get; set; } = null!;
 
     public string? ImageUrl { get; set; }
 
     public DateTime CreateDate { get; set; }
+
+    public DateTime? ExpireToken { get; set; }
 }

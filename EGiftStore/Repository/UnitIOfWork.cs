@@ -12,12 +12,19 @@ namespace Repository
     public class UnitIOfWork : IUnitIOfWork
     {
         private readonly EgiftShopContext _context;
-        private  ICustomerRepository _customerRepository = null!;
+
         public UnitIOfWork(EgiftShopContext context)
         {
             _context = context;
+            CustomerRepository = new CustomerRepository(_context);
+            AdminRepository = new AdminRepository(_context);
+            ProductRepository = new ProductRepository(_context);
         }
-        public ICustomerRepository CustomerRepository { get { return _customerRepository ??= new CustomerRepository(_context); } }
+        public ICustomerRepository CustomerRepository { get; private set; }
+
+        public IAdminRepository AdminRepository { get; private set; }
+
+        public IProductRepository ProductRepository { get; private set; }
 
         public async Task<int> SaveChangesAsync()
         {
