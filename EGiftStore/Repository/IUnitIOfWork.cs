@@ -10,6 +10,8 @@ namespace Repository
     public interface IUnitIOfWork
     {
         public ICustomerRepository CustomerRepository { get; }
+        public IAdminRepository AdminRepository { get; }
+        public IProductRepository ProductRepository { get; }
         Task<int> SaveChangesAsync();
     }
 }

@@ -17,6 +17,7 @@ namespace EGiftStore.MiddlewareInvoke
         {
             services.AddScoped<IUnitIOfWork, UnitIOfWork>();
             services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<IAdminService, AdminService>();
         }
 
 
@@ -25,34 +26,34 @@ namespace EGiftStore.MiddlewareInvoke
             return configuration.GetSection("AppSettings:SecretKey").Value ?? null!;
         }
 
-
         public static void AddSwagger(this IServiceCollection services)
         {
             var configuration = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
             var secretKey = configuration.GetSecretKey();
 
-            services.AddSwaggerGen(x =>
+            services.AddSwaggerGen(options =>
             {
-                x.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                options.AddSecurityDefinition("Custom EGift", new OpenApiSecurityScheme
                 {
-                    Description = "Type Bearer and space then paste the token.",
-                    Name = "Authorization",
+                    Description = "Keep working",
                     In = ParameterLocation.Header,
+                    Name = "Authorization",
                     Type = SecuritySchemeType.ApiKey
-                });
-                x.OperationFilter<SecurityRequirementsOperationFilter>();
-            });
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(x =>
-            {
-                x.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-                {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidateIssuerSigningKey = true,
-                    ValidateLifetime = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secretKey))
-                };
+                });
+
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                    {
+                    new OpenApiSecurityScheme{
+                    Reference= new OpenApiReference{
+                    Id="Custom EGift",
+                    Type=ReferenceType.SecurityScheme
+                    }
+                    },
+                    new  List<string>()
+                    }
+                });
+                options.OperationFilter<SecurityRequirementsOperationFilter>();
             });
         }
 

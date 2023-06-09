@@ -21,11 +21,7 @@ namespace Persistence.ViewModel.Response
         public string Email { get; set; } = null!;
 
         public string? Phone { get; set; }
-
-        public DateTime CreateDate { get; set; }
-
-        public DateTime LastUpdate { get; set; }
-
+        public DateTime ExpireToken { get; set; }
         public bool IsActive { get; set; }
     }
 }

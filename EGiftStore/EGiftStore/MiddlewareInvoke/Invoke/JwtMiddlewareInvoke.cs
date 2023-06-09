@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using EGiftStore.ThrowException;
+using Microsoft.IdentityModel.Tokens;
 using Service.Interface;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection.Metadata;
@@ -7,6 +8,8 @@ namespace EGiftStore.MiddlewareInvoke.Invoke
 {
     public class JwtMiddlewareInvoke
     {
+        private static string CUSTOMER_ROLE = "Customer";
+        private static string ADMIN_ROLE = "Admin";
         private RequestDelegate _next;
         private IConfiguration _config;
 
@@ -15,16 +18,18 @@ namespace EGiftStore.MiddlewareInvoke.Invoke
             _next = request;
             _config = configuration;
         }
-        public async Task Invoke(HttpContext context, ICustomerService customerService)
+
+        public async Task Invoke(HttpContext context, ICustomerService customerService, IAdminService adminService)
         {
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
             if (token != null)
             {
-                await TokenHandle(context, customerService, token);
+                await TokenHandle(context, customerService, token, adminService);
             }
             await _next(context);
         }
-        public async Task TokenHandle(HttpContext context, ICustomerService customerService, string token)
+
+        public async Task TokenHandle(HttpContext context, ICustomerService customerService, string token, IAdminService adminService)
         {
             try
             {
@@ -39,8 +44,25 @@ namespace EGiftStore.MiddlewareInvoke.Invoke
                     ClockSkew = TimeSpan.Zero
                 }, out SecurityToken tokenHandled);
                 var tokenJwt = (JwtSecurityToken)tokenHandled;
-                var user = await customerService.GetCustomerById(Guid.Parse(tokenJwt.Claims.First(x => x.Type == "id").Value));
-                context.Items["User"] = user;
+                var role = tokenJwt.Claims.First(x => x.Type == "role").Value;
+                if (role.Equals(CUSTOMER_ROLE))
+                {
+                    var expire = await customerService.GetExpireToken(Guid.Parse(tokenJwt.Claims.First(x => x.Type == "id").Value));
+                    if (expire != null)
+                    {
+                        context.Items["Expire"] = expire;
+                        context.Items["Role"] = CUSTOMER_ROLE;
+                    }
+                }
+                else if (role.Equals(ADMIN_ROLE))
+                {
+                    var expire = await adminService.GetExpireToken(Guid.Parse(tokenJwt.Claims.First(x => x.Type == "id").Value));
+                    if (expire != null)
+                    {
+                        context.Items["Expire"] = expire;
+                        context.Items["Role"] = ADMIN_ROLE;
+                    }
+                }
             }
             catch (Exception ex)
             {

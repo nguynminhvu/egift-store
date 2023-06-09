@@ -45,6 +45,7 @@ public partial class EgiftShopContext : DbContext
 
             entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.CreateDate).HasColumnType("date");
+            entity.Property(e => e.ExpireToken).HasColumnType("date");
             entity.Property(e => e.ImageUrl)
                 .HasMaxLength(100)
                 .IsUnicode(false);

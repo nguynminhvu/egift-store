@@ -8,9 +8,11 @@ namespace Service.Interface
     public interface ICustomerService
     {
         public Task<IActionResult> CustomerRegisterAsync(CustomerRegisterViewModel model);
-        public Task<Customer> GetCustomerById(Guid id);
+        public Task<CustomerViewModel> GetCustomerById(Guid id);
         public Task<AuthenticationViewModel> AuthenticationAsync(AuthenticationLoginModel av);
         public IActionResult GetCustomers();
+        public Task<IActionResult> AcceptCustomer(Guid id);
+        public Task<DateTime?> GetExpireToken(Guid id);
 
     }
 }

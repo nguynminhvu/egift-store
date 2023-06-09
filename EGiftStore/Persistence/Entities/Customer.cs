@@ -23,7 +23,7 @@ public partial class Customer
 
     public DateTime LastUpdate { get; set; }
 
-    public DateTime ExpireToken { get; set; }
+    public DateTime? ExpireToken { get; set; }
 
     public bool IsActive { get; set; }
 
