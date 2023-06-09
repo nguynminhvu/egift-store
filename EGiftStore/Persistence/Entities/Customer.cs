@@ -23,6 +23,8 @@ public partial class Customer
 
     public DateTime LastUpdate { get; set; }
 
+    public DateTime ExpireToken { get; set; }
+
     public bool IsActive { get; set; }
 
     public virtual ICollection<Cart> Carts { get; set; } = new List<Cart>();

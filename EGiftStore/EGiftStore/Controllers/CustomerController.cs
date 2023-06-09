@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using EGiftStore.MiddlewareInvoke.Invoke;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Persistence.Entities;
 using Persistence.ViewModel.Request;
@@ -17,8 +18,10 @@ namespace EGiftStore.Controllers
             _customerService = customerService;
         }
 
+
         [HttpPost]
-        public async Task<IActionResult> CustomerRegister(CustomerRegisterViewModel crvm)
+        [Route("register")]
+        public async Task<IActionResult> RegisterCustomer(CustomerRegisterViewModel crvm)
         {
             try
             {
@@ -33,6 +36,42 @@ namespace EGiftStore.Controllers
                     if (status.StatusCode == 500) return StatusCode(StatusCodes.Status500InternalServerError);
                 }
                 return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        [HttpPost]
+        [Route("login")]
+        public async Task<IActionResult> LoginCustomer(AuthenticationLoginModel alm)
+        {
+            try
+            {
+                var rs = await _customerService.AuthenticationAsync(alm);
+                return rs != null ? Ok(rs) : BadRequest(new { Message = "Username or password invalid" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.ToString());
+            }
+        }
+
+
+        [HttpGet]
+        [AuthConfig("Customer")]
+        public IActionResult GetCustomers()
+        {
+            try
+            {
+                var user = HttpContext.Items["User"] as Customer;
+                if (user != null)
+                {
+                    return Ok(_customerService.GetCustomers());
+                }
+                return StatusCode(StatusCodes.Status401Unauthorized, new { Message = "Unauthorized" });
             }
             catch (Exception ex)
             {
