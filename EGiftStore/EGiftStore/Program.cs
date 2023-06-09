@@ -13,6 +13,7 @@ namespace EGiftStore
 
             // Add services to the container.
             builder.Services.AddSwaggerGen();
+            builder.Services.AddSwagger();
             builder.Services.AddControllers();
             builder.Services.AddDbContext<EgiftShopContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("EGiftDb"))
@@ -34,7 +35,7 @@ namespace EGiftStore
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
+            app.UseJwt();
 
             app.MapControllers();
 

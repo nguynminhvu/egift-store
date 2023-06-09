@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using EGiftStore.MiddlewareInvoke.Invoke;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Persistence.Entities;
@@ -17,12 +18,19 @@ namespace EGiftStore.MiddlewareInvoke
             services.AddScoped<IUnitIOfWork, UnitIOfWork>();
             services.AddScoped<ICustomerService, CustomerService>();
         }
+
+
         public static string GetSecretKey(this IConfiguration configuration)
         {
             return configuration.GetSection("AppSettings:SecretKey").Value ?? null!;
         }
+
+
         public static void AddSwagger(this IServiceCollection services)
         {
+            var configuration = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+            var secretKey = configuration.GetSecretKey();
+
             services.AddSwaggerGen(x =>
             {
                 x.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
@@ -34,6 +42,7 @@ namespace EGiftStore.MiddlewareInvoke
                 });
                 x.OperationFilter<SecurityRequirementsOperationFilter>();
             });
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(x =>
             {
                 x.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
@@ -42,9 +51,14 @@ namespace EGiftStore.MiddlewareInvoke
                     ValidateAudience = false,
                     ValidateIssuerSigningKey = true,
                     ValidateLifetime = true,
-                  //  IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(GetSecretKey()))
+                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secretKey))
                 };
             });
+        }
+
+        public static void UseJwt(this IApplicationBuilder app)
+        {
+            app.UseMiddleware<JwtMiddlewareInvoke>();
         }
     }
 }

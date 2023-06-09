@@ -110,12 +110,11 @@ public partial class EgiftShopContext : DbContext
             entity.Property(e => e.Email)
                 .HasMaxLength(100)
                 .IsUnicode(false);
+            entity.Property(e => e.ExpireToken).HasColumnType("date");
             entity.Property(e => e.Fullname)
                 .HasMaxLength(100)
                 .IsUnicode(false);
-            entity.Property(e => e.LastUpdate)
-                .HasMaxLength(100)
-                .IsUnicode(false);
+            entity.Property(e => e.LastUpdate).HasColumnType("date");
             entity.Property(e => e.Password)
                 .HasMaxLength(100)
                 .IsUnicode(false);
