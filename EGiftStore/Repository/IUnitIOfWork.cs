@@ -12,6 +12,7 @@ namespace Repository
         public ICustomerRepository CustomerRepository { get; }
         public IAdminRepository AdminRepository { get; }
         public IProductRepository ProductRepository { get; }
+        public ICategoryRepository CategoryRepository { get; }
         Task<int> SaveChangesAsync();
     }
 }

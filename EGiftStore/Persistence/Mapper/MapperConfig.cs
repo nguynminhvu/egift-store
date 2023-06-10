@@ -9,11 +9,13 @@ using System.Threading.Tasks;
 
 namespace Persistence.Mapper
 {
-    public class MapperConfig:Profile
+    public class MapperConfig : Profile
     {
         public MapperConfig()
         {
             CreateMap<Customer, CustomerViewModel>();
+            CreateMap<Product, ProductViewModel>();
+            CreateMap<Category, CategoryViewModel>();
         }
     }
 }
