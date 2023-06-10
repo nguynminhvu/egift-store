@@ -3,7 +3,7 @@ using Persistence.Entities;
 using System.Linq.Expressions;
 namespace Repository.Repositories
 {
-    public class Repository<T> where T : class
+    public class Repository<T> : IRepository<T> where T : class
     {
         private readonly DbSet<T> _entity;
 
@@ -34,6 +34,15 @@ namespace Repository.Repositories
         public async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> expression)
         {
             return await _entity.FirstOrDefaultAsync(expression) ?? null!;
+        }
+        public async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, Expression<Func<T, Object>> include)
+        {
+            return await _entity.Include(include).FirstOrDefaultAsync(predicate);
+        }
+
+        public Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> include1, Expression<Func<T, object>> include2)
+        {
+            throw new NotImplementedException();
         }
     }
 }

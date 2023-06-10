@@ -11,7 +11,6 @@ namespace Repository.Repositories
 {
     public interface IRepository<T> where T : class
     {
-
         public IQueryable<T> GetAll();
 
         public IQueryable<T> GetEntitiesPredicate(Expression<Func<T, bool>> expression);
@@ -23,6 +22,10 @@ namespace Repository.Repositories
         public void Remove(T entity);
 
         public Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> expression);
+
+        public Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, Expression<Func<T, Object>> include);
+
+        public Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, Expression<Func<T, Object>> include1, Expression<Func<T, Object>> include2);
 
     }
 }

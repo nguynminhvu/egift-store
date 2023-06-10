@@ -3,9 +3,6 @@ using Repository.Repositories.Implement;
 using Repository.Repositories.Interface;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Repository
 {
@@ -19,12 +16,15 @@ namespace Repository
             CustomerRepository = new CustomerRepository(_context);
             AdminRepository = new AdminRepository(_context);
             ProductRepository = new ProductRepository(_context);
+            CategoryRepository = new CategoryRepository(_context);
         }
         public ICustomerRepository CustomerRepository { get; private set; }
 
         public IAdminRepository AdminRepository { get; private set; }
 
         public IProductRepository ProductRepository { get; private set; }
+
+        public ICategoryRepository CategoryRepository { get; private set; }
 
         public async Task<int> SaveChangesAsync()
         {
