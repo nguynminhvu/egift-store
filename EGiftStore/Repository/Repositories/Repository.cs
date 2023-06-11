@@ -40,9 +40,13 @@ namespace Repository.Repositories
             return await _entity.Include(include).FirstOrDefaultAsync(predicate);
         }
 
-        public Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> include1, Expression<Func<T, object>> include2)
+        public async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, Expression<Func<T, Object>> include1, Expression<Func<T, Object>> include2)
         {
-            throw new NotImplementedException();
+            return await _entity.Include(include1).Include(include2).FirstOrDefaultAsync(predicate);
+        }
+        public void RemoveRange(IEnumerable<T> entities)
+        {
+            _entity.RemoveRange(entities);
         }
     }
 }

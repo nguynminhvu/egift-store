@@ -17,6 +17,7 @@ namespace Repository
             AdminRepository = new AdminRepository(_context);
             ProductRepository = new ProductRepository(_context);
             CategoryRepository = new CategoryRepository(_context);
+            ProductImageRepository = new ProductImageRepository(_context);
         }
         public ICustomerRepository CustomerRepository { get; private set; }
 
@@ -25,6 +26,8 @@ namespace Repository
         public IProductRepository ProductRepository { get; private set; }
 
         public ICategoryRepository CategoryRepository { get; private set; }
+
+        public IProductImageRepository ProductImageRepository { get; private set; }
 
         public async Task<int> SaveChangesAsync()
         {

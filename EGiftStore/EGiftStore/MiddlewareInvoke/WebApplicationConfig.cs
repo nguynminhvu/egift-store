@@ -19,6 +19,7 @@ namespace EGiftStore.MiddlewareInvoke
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IProductService, ProductService>();
         }
 
 
