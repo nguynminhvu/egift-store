@@ -16,6 +16,7 @@ namespace Persistence.Mapper
             CreateMap<Customer, CustomerViewModel>();
             CreateMap<Product, ProductViewModel>();
             CreateMap<Category, CategoryViewModel>();
+            CreateMap<ProductImage, ProductImageViewModel>();
         }
     }
 }

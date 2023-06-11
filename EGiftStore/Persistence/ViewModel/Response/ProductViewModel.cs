@@ -19,9 +19,9 @@ namespace Persistence.ViewModel.Response
 
         public int Stock { get; set; }
 
-        public virtual ICollection<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
+        public virtual ICollection<ProductImageViewModel> ProductImages { get; set; } = new List<ProductImageViewModel>();
 
-        public virtual ICollection<Category> Categories { get; set; } = new List<Category>();
+        public virtual ICollection<CategoryViewModel> Categories { get; set; } = new List<CategoryViewModel>();
 
     }
 }

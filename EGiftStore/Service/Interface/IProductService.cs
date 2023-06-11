@@ -15,7 +15,7 @@ namespace Service.Interface
         public Task<ProductViewModel> GetProduct(Guid id);
         public Task<IActionResult> GetProducts(ProductFilterModel productFilterModel);
         public Task<IActionResult> GetProductsByCategory(Guid categoryId);
-        public Task<IActionResult> UpdateProduct(ProductUpdateModel productUpdateModel);
-        public Task<ProductViewModel> RemoveProduct(Guid id);
+        public Task<IActionResult> UpdateProduct(Guid id, ProductUpdateModel productUpdateModel);
+        public Task<IActionResult> RemoveProduct(Guid id);
     }
 }
