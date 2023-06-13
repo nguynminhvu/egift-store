@@ -9,6 +9,6 @@ namespace Persistence.ViewModel.Request
     public class CartUpdateModel
     {
         public Guid CartId { get; set; }
-        public List<CartItemUpdateModel> CartItemUpdate { get; set; }
+        public List<CartItemUpdateModel> CartItems { get; set; }
     }
 }

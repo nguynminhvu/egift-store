@@ -8,7 +8,6 @@ namespace Persistence.ViewModel.Response
 {
     public class ProductCartItemViewModel
     {
-        public Guid Id { get; set; }
 
         public string Name { get; set; } = null!;
 
@@ -18,7 +17,7 @@ namespace Persistence.ViewModel.Response
 
         public int Stock { get; set; }
 
-        public virtual ICollection<ProductImageViewModel> ProductImages { get; set; } = new List<ProductImageViewModel>();
+        public virtual ProductImageViewModel ProductImages { get; set; }
 
         public virtual ICollection<CategoryViewModel> Categories { get; set; } = new List<CategoryViewModel>();
 
