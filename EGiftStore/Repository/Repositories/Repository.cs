@@ -48,5 +48,10 @@ namespace Repository.Repositories
         {
             _entity.RemoveRange(entities);
         }
+
+        public IQueryable<T> GetEntitiesPredicate(Expression<Func<T, bool>> predicate, Expression<Func<T, Object>> include)
+        {
+            return _entity.Include(predicate).Where(predicate);
+        }
     }
 }

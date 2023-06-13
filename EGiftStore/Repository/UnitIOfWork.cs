@@ -18,6 +18,8 @@ namespace Repository
             ProductRepository = new ProductRepository(_context);
             CategoryRepository = new CategoryRepository(_context);
             ProductImageRepository = new ProductImageRepository(_context);
+            CartRepository = new CartRepository(_context);
+            CartItemRepository = new CartItemRepository(_context);
         }
         public ICustomerRepository CustomerRepository { get; private set; }
 
@@ -28,6 +30,10 @@ namespace Repository
         public ICategoryRepository CategoryRepository { get; private set; }
 
         public IProductImageRepository ProductImageRepository { get; private set; }
+
+        public ICartRepository CartRepository { get; private set; }
+
+        public ICartItemRepository CartItemRepository { get; private set; }
 
         public async Task<int> SaveChangesAsync()
         {
