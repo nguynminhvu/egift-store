@@ -26,6 +26,7 @@ namespace Repository.Repositories
         public Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, Expression<Func<T, Object>> include);
 
         public Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, Expression<Func<T, Object>> include1, Expression<Func<T, Object>> include2);
+        public IQueryable<T> GetEntitiesPredicate(Expression<Func<T, bool>> predicate, Expression<Func<T, Object>> include);
         public void RemoveRange(IEnumerable<T> entities);
     }
 }

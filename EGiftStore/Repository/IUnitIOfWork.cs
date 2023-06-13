@@ -13,7 +13,9 @@ namespace Repository
         public IAdminRepository AdminRepository { get; }
         public IProductRepository ProductRepository { get; }
         public ICategoryRepository CategoryRepository { get; }
-        public IProductImageRepository ProductImageRepository { get; }  
+        public IProductImageRepository ProductImageRepository { get; }
+        public ICartRepository CartRepository { get; }
+        public ICartItemRepository CartItemRepository { get; }
         Task<int> SaveChangesAsync();
     }
 }
