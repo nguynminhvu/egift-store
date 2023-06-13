@@ -9,7 +9,8 @@ namespace Persistence.ViewModel.Response
 {
     public class CartItemViewModel
     {
-        public int Quantity { get; set; }
-        public ProductViewModel ProductViewModel { get; set; }
+        public Guid ProductId { get; set; }
+		public int Quantity { get; set; }
+        public ProductCartItemViewModel Product { get; set; }
     }
 }
