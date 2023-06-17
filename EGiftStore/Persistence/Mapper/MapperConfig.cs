@@ -20,6 +20,8 @@ namespace Persistence.Mapper
 			CreateMap<Cart, CartViewModel>();
 			CreateMap<CartItem, CartItemViewModel>();
 			CreateMap<Product, ProductCartItemViewModel>().ForMember(x => x.ProductImages, x => x.MapFrom(x => x.ProductImages.FirstOrDefault()));
+			CreateMap<Order, OrderViewModel>();
+			CreateMap<OrderDetail, OrderDetailViewModel>();
 		}
 	}
 }

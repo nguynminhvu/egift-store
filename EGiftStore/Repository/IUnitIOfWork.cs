@@ -7,15 +7,17 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public interface IUnitIOfWork
-    {
-        public ICustomerRepository CustomerRepository { get; }
-        public IAdminRepository AdminRepository { get; }
-        public IProductRepository ProductRepository { get; }
-        public ICategoryRepository CategoryRepository { get; }
-        public IProductImageRepository ProductImageRepository { get; }
-        public ICartRepository CartRepository { get; }
-        public ICartItemRepository CartItemRepository { get; }
-        Task<int> SaveChangesAsync();
-    }
+	public interface IUnitIOfWork
+	{
+		public ICustomerRepository CustomerRepository { get; }
+		public IAdminRepository AdminRepository { get; }
+		public IProductRepository ProductRepository { get; }
+		public ICategoryRepository CategoryRepository { get; }
+		public IProductImageRepository ProductImageRepository { get; }
+		public ICartRepository CartRepository { get; }
+		public ICartItemRepository CartItemRepository { get; }
+		public IOrderDetailRepository OrderDetailRepository { get; }
+		IOrderRepository OrderRepository { get; }
+		Task<int> SaveChangesAsync();
+	}
 }

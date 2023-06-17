@@ -51,7 +51,7 @@ namespace Repository.Repositories
 
         public IQueryable<T> GetEntitiesPredicate(Expression<Func<T, bool>> predicate, Expression<Func<T, Object>> include)
         {
-            return _entity.Where(predicate).Include(predicate);
+            return _entity.Where(predicate).Include(include);
         }
     }
 }
