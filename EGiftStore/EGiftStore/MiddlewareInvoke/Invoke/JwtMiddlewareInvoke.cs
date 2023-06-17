@@ -61,7 +61,7 @@ namespace EGiftStore.MiddlewareInvoke.Invoke
                     var expire = await adminService.GetExpireToken(id);
                     if (expire != null)
                     {
-                        context.Items["Id"] = id;
+                        context.Items["AdminId"] = id;
                         context.Items["Expire"] = expire;
                         context.Items["Role"] = ADMIN_ROLE;
                     }

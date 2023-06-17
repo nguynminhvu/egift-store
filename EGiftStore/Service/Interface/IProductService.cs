@@ -9,13 +9,15 @@ using System.Threading.Tasks;
 
 namespace Service.Interface
 {
-    public interface IProductService
-    {
-        public Task<IActionResult> CreateProduct(ProductCreateModel productCreateModel);
-        public Task<ProductViewModel> GetProduct(Guid id);
-        public Task<IActionResult> GetProducts(ProductFilterModel productFilterModel);
-        public Task<IActionResult> GetProductsByCategory(Guid categoryId);
-        public Task<IActionResult> UpdateProduct(Guid id, ProductUpdateModel productUpdateModel);
-        public Task<IActionResult> RemoveProduct(Guid id);
-    }
+	public interface IProductService
+	{
+		public Task<ProductViewModel> GetProduct(Guid id);
+		public Task<IActionResult> CreateProduct(ProductCreateModel productCreateModel);
+		public Task<IActionResult> GetProducts(ProductFilterModel productFilterModel);
+		public Task<IActionResult> GetProductsByCategory(Guid categoryId);
+		public Task<IActionResult> UpdateProduct(Guid id, ProductUpdateModel productUpdateModel);
+		public Task<IActionResult> RemoveProduct(Guid id);
+		public Task<bool> CheckStock(CartViewModel id);
+		public Task<bool> UpdateStock(OrderViewModel ovm);
+	}
 }

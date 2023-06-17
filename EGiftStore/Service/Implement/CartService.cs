@@ -77,23 +77,37 @@ namespace Service.Implement
 			return new StatusCodeResult(400);
 		}
 
+		public async Task<bool> ClearCart(Guid cartId)
+		{
+			var cartItem = _uow.CartItemRepository.GetEntitiesPredicate(x => x.CartId.Equals(cartId));
+			_uow.CartItemRepository.RemoveRange(cartItem);
+			return await _uow.SaveChangesAsync() > 0 ? true : false;
+		}
+
 		public async Task<IActionResult> GetCartItems(Guid customerId)
 		{
-			var cart = await _uow.CartRepository.FirstOrDefaultAsync(x => x.CustomerId.Equals(customerId), x => x.CartItems);
-			if (cart == null)
-			{
-				cart = new Cart
-				{
-					Id = Guid.NewGuid(),
-					CustomerId = customerId
-				};
-				await _uow.CartRepository.AddAsync(cart);
-				await _uow.SaveChangesAsync();
-			}
-			var cartItem = await _uow.CartItemRepository.GetEntitiesPredicate(x => x.CartId.Equals(cart.Id)).ProjectTo<CartItemViewModel>(_mapper.ConfigurationProvider).ToListAsync();
-			var cartViewModel = _mapper.Map<CartViewModel>(cart);
-			cartViewModel.CartItems = cartItem;
-			return new JsonResult(cartViewModel);
+			#region Because FirstOrDefaultAsync lazy loading, I use it (Choice 1)
+			//var cart = await _uow.CartRepository.FirstOrDefaultAsync(x => x.CustomerId.Equals(customerId), x => x.CartItems);
+			//if (cart == null)
+			//{
+			//	cart = new Cart
+			//	{
+			//		Id = Guid.NewGuid(),
+			//		CustomerId = customerId
+			//	};
+			//	await _uow.CartRepository.AddAsync(cart);
+			//	await _uow.SaveChangesAsync();
+			//}
+			//var cartItem = await _uow.CartItemRepository.GetEntitiesPredicate(x => x.CartId.Equals(cart.Id)).ProjectTo<CartItemViewModel>(_mapper.ConfigurationProvider).ToListAsync();
+			//var cartViewModel = _mapper.Map<CartViewModel>(cart);
+			//cartViewModel.CartItems = cartItem;
+			//return new JsonResult(cartViewModel);
+			#endregion
+
+			//Choice 2
+			var cart = await _uow.CartRepository.GetEntitiesPredicate(x => x.CustomerId.Equals(customerId))
+				.ProjectTo<CartViewModel>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
+			return new JsonResult(cart);
 		}
 
 		public async Task<IActionResult> UpdateCart(CartUpdateModel cum)

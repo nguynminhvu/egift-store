@@ -143,20 +143,19 @@ public partial class EgiftShopContext : DbContext
 
         modelBuilder.Entity<OrderDetail>(entity =>
         {
-            entity.HasKey(e => new { e.OrderId, e.Product });
+            entity.HasKey(e => new { e.OrderId, e.ProductId });
 
             entity.ToTable("OrderDetail");
 
             entity.Property(e => e.CreateDate).HasColumnType("date");
-            entity.Property(e => e.Discount).HasMaxLength(50);
 
             entity.HasOne(d => d.Order).WithMany(p => p.OrderDetails)
                 .HasForeignKey(d => d.OrderId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_OrderDetail_Order");
 
-            entity.HasOne(d => d.ProductNavigation).WithMany(p => p.OrderDetails)
-                .HasForeignKey(d => d.Product)
+            entity.HasOne(d => d.Product).WithMany(p => p.OrderDetails)
+                .HasForeignKey(d => d.ProductId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_OrderDetail_Product");
         });
