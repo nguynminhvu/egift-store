@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Persistence.Entities;
 using Persistence.ViewModel.Response;
+using Service.Interface;
 using System.Collections;
+using System.Text;
 
 namespace EGiftStore.MiddlewareInvoke.Invoke
 {
@@ -20,6 +22,7 @@ namespace EGiftStore.MiddlewareInvoke.Invoke
             if (role == null || expiredRaw == null)
             {
                 context.Result = new JsonResult(new { Message = "Unauthorized" }) { StatusCode = 401 };
+                return;
             }
             else
             {
@@ -28,12 +31,15 @@ namespace EGiftStore.MiddlewareInvoke.Invoke
                 if (expireToken < 0)
                 {
                     context.Result = new JsonResult(new { Message = "Token Expired" }) { StatusCode = 401 };
+                    return;
                 }
                 if (!Roles.Contains(role.ToString()!))
                 {
                     context.Result = new JsonResult(new { Message = "Forbidden" }) { StatusCode = 403 };
+                    return;
                 }
             }
         }
+
     }
 }

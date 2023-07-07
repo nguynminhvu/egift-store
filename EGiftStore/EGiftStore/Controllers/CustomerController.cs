@@ -14,14 +14,20 @@ namespace EGiftStore.Controllers
     {
         private static string CUSTOMER_ROLE = "Customer";
         private static string ADMIN_ROLE = "Admin";
+        private ICacheService _cacheService;
         private ICustomerService _customerService;
 
-        public CustomerController(ICustomerService customerService)
+        public CustomerController(ICustomerService customerService, ICacheService cacheService)
         {
+            _cacheService = cacheService;
             _customerService = customerService;
         }
 
-
+        /// <summary>
+        /// Register customer
+        /// </summary>
+        /// <param name="crvm"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("register")]
         public async Task<IActionResult> RegisterCustomer(CustomerRegisterViewModel crvm)
@@ -37,10 +43,15 @@ namespace EGiftStore.Controllers
                 if (status.StatusCode == 400) return BadRequest(new { Message = "Username already exist" });
                 if (status.StatusCode == 500) return StatusCode(StatusCodes.Status500InternalServerError);
             }
+
             return BadRequest();
         }
 
-
+        /// <summary>
+        /// Login customer account
+        /// </summary>
+        /// <param name="alm">Username and password</param>
+        /// <returns></returns>
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> LoginCustomer(AuthenticationLoginModel alm)
@@ -49,7 +60,11 @@ namespace EGiftStore.Controllers
             return rs != null ? Ok(rs) : BadRequest(new { Message = "Username or password invalid" });
         }
 
-
+        /// <summary>
+        /// Get customer
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("{id}")]
         [AuthConfig("Customer", "Admin")]
@@ -59,15 +74,23 @@ namespace EGiftStore.Controllers
             return rs != null ? Ok(rs) : NotFound(new { Message = "No Customer" });
         }
 
-
+        /// <summary>
+        /// Get customers
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [AuthConfig("Admin")]
+        [Cache(10000)]
         public IActionResult GetCustomers()
         {
             return Ok((_customerService.GetCustomers() as JsonResult)!.Value);
         }
 
-
+        /// <summary>
+        /// Update password
+        /// </summary>
+        /// <param name="password"></param>
+        /// <returns></returns>
         [HttpPut]
         [AuthConfig("Customer")]
         [Route("update-password")]
@@ -91,9 +114,14 @@ namespace EGiftStore.Controllers
             return Unauthorized();
         }
 
-
+        /// <summary>
+        /// Update information
+        /// </summary>
+        /// <param name="cum"></param>
+        /// <returns></returns>
         [HttpPut]
         [AuthConfig("Customer")]
+
         public async Task<IActionResult> UpdateCustomer(CustomerUpdateModel cum)
         {
             var idRaw = HttpContext.Items["Id"]!.ToString()!;
@@ -112,7 +140,11 @@ namespace EGiftStore.Controllers
             return Unauthorized();
         }
 
-
+        /// <summary>
+        /// Remove customer
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete]
         [Route("{id}")]
         [AuthConfig("Admin")]

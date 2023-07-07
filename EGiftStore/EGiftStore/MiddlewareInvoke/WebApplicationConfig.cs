@@ -1,66 +1,82 @@
-﻿using EGiftStore.MiddlewareInvoke.Invoke;
+﻿using EGiftStore.Configuration;
+using EGiftStore.MiddlewareInvoke.Invoke;
 using Microsoft.OpenApi.Models;
 using Repository;
 using Service.Implement;
 using Service.Interface;
+using StackExchange.Redis;
 using Swashbuckle.AspNetCore.Filters;
+using System.Reflection;
 
 namespace EGiftStore.MiddlewareInvoke
 {
-	public static class WebApplicationConfig
-	{
-		public static void AddDependenceInjection(this IServiceCollection services)
-		{
-			services.AddScoped<IUnitIOfWork, UnitIOfWork>();
-			services.AddScoped<ICustomerService, CustomerService>();
-			services.AddScoped<IAdminService, AdminService>();
-			services.AddScoped<ICategoryService, CategoryService>();
-			services.AddScoped<IProductService, ProductService>();
-			services.AddScoped<ICartService, CartService>();
-			services.AddScoped<IOrderService, OrderService>();
-			services.AddScoped<IOrderDetailService, OrderDetailService>();
-		}
+    public static class WebApplicationConfig
+    {
+        public static void AddDependenceInjection(this IServiceCollection services, IConfiguration configuration)
+        {
+            var redisConfiguration = new RedisConfiguration();
+            configuration.GetSection("RedisConfiguration").Bind(redisConfiguration);
+            services.AddSingleton(redisConfiguration);
+            if (!redisConfiguration.Enable)
+            {
+                return;
+            }
+            services.AddSingleton<IConnectionMultiplexer>(x => ConnectionMultiplexer.Connect(redisConfiguration.ConnectionString));
+            services.AddStackExchangeRedisCache(option => option.Configuration = redisConfiguration.ConnectionString);
+            services.AddSingleton<ICacheService, CacheService>();
+            services.AddScoped<IUnitIOfWork, UnitIOfWork>();
+            services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<IAdminService, AdminService>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<ICartService, CartService>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IOrderDetailService, OrderDetailService>();
+        }
 
 
-		public static string GetSecretKey(this IConfiguration configuration)
-		{
-			return configuration.GetSection("AppSettings:SecretKey").Value ?? null!;
-		}
+        public static string GetSecretKey(this IConfiguration configuration)
+        {
+            return configuration.GetSection("AppSettings:SecretKey").Value ?? null!;
+        }
 
-		public static void AddSwagger(this IServiceCollection services)
-		{
-			var configuration = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
-			var secretKey = configuration.GetSecretKey();
+        public static void AddSwagger(this IServiceCollection services)
+        {
+            var configuration = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+            var secretKey = configuration.GetSecretKey();
 
-			services.AddSwaggerGen(options =>
-			{
-				options.AddSecurityDefinition("Custom EGift", new OpenApiSecurityScheme
-				{
-					Description = "Keep working",
-					In = ParameterLocation.Header,
-					Name = "Authorization",
-					Type = SecuritySchemeType.ApiKey
+            services.AddSwaggerGen(options =>
+            {
+                options.AddSecurityDefinition("Custom EGift", new OpenApiSecurityScheme
+                {
+                    Description = "Keep working",
+                    In = ParameterLocation.Header,
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey
 
-				});
+                });
 
-				options.AddSecurityRequirement(new OpenApiSecurityRequirement {
-					{
-					new OpenApiSecurityScheme{
-					Reference= new OpenApiReference{
-					Id="Custom EGift",
-					Type=ReferenceType.SecurityScheme
-					}
-					},
-					new  List<string>()
-					}
-				});
-				options.OperationFilter<SecurityRequirementsOperationFilter>();
-			});
-		}
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                    {
+                    new OpenApiSecurityScheme{
+                    Reference= new OpenApiReference{
+                    Id="Custom EGift",
+                    Type=ReferenceType.SecurityScheme
+                    }
+                    },
+                    new  List<string>()
+                    }
+                });
+                options.OperationFilter<SecurityRequirementsOperationFilter>();
 
-		public static void UseJwt(this IApplicationBuilder app)
-		{
-			app.UseMiddleware<JwtMiddlewareInvoke>();
-		}
-	}
+                options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory,
+          $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
+            });
+        }
+
+        public static void UseJwt(this IApplicationBuilder app)
+        {
+            app.UseMiddleware<JwtMiddlewareInvoke>();
+        }
+    }
 }
