@@ -12,13 +12,20 @@ namespace EGiftStore.Controllers
     {
         private static string CUSTOMER_ROLE = "Customer";
         private static string ADMIN_ROLE = "Admin";
+        private ICacheService _cacheService;
         private IProductService _productService;
 
-        public ProductController(IProductService productService)
+        public ProductController(IProductService productService, ICacheService cacheService)
         {
+            _cacheService = cacheService;
             _productService = productService;
         }
 
+        /// <summary>
+        /// Get product
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("{id}")]
         public async Task<IActionResult> GetProduct([FromRoute] Guid id)
@@ -27,7 +34,13 @@ namespace EGiftStore.Controllers
             return rs != null ? Ok(rs) : NotFound(new { Message = "No Product" });
         }
 
+        /// <summary>
+        /// Get products
+        /// </summary>
+        /// <param name="productFilterModel"></param>
+        /// <returns></returns>
         [HttpGet]
+        [Cache(10000)]
         public async Task<IActionResult> GetProducts([FromQuery] ProductFilterModel productFilterModel)
         {
             var rs = await _productService.GetProducts(productFilterModel);
@@ -38,8 +51,14 @@ namespace EGiftStore.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Get products by category id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet]
         [Route("category-id/{id}")]
+        [Cache(10000)]
         public async Task<IActionResult> GetProductsByCategoryId(Guid id)
         {
             var rs = await _productService.GetProductsByCategory(id);
@@ -50,13 +69,19 @@ namespace EGiftStore.Controllers
             return BadRequest();
         }
 
+        /// <summary>
+        /// Create new product
+        /// </summary>
+        /// <param name="productCreateModel"></param>
+        /// <returns></returns>
         [HttpPost]
         //  [AuthConfig("Admin")]
-        public async Task<IActionResult> CreateProduct(ProductCreateModel productCreateModel)
+        public async Task<IActionResult> CreateProduct([FromQuery]ProductCreateModel productCreateModel)
         {
             var rs = await _productService.CreateProduct(productCreateModel);
             if (rs is JsonResult jsonResult)
             {
+                await _cacheService.RemoveCacheAsync(HttpContext.Request.Path.ToString());
                 return StatusCode(StatusCodes.Status201Created, jsonResult.Value);
             }
             if (rs is StatusCodeResult status)
@@ -69,6 +94,12 @@ namespace EGiftStore.Controllers
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
+        /// <summary>
+        /// Update product
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="productUpdateModel"></param>
+        /// <returns></returns>
         [HttpPut]
         [Route("{id}")]
         //  [AuthConfig("Admin")]
@@ -77,6 +108,7 @@ namespace EGiftStore.Controllers
             var rs = await _productService.UpdateProduct(id, productUpdateModel);
             if (rs is JsonResult jsonResult)
             {
+                await _cacheService.RemoveCacheAsync(HttpContext.Request.Path.ToString());
                 return Ok(jsonResult.Value);
             }
             if (rs is StatusCodeResult status)
@@ -87,7 +119,11 @@ namespace EGiftStore.Controllers
             return BadRequest();
         }
 
-
+        /// <summary>
+        /// Remove product
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete]
         [Route("{id}")]
         public async Task<IActionResult> RemoveProduct([FromRoute] Guid id)
@@ -97,11 +133,12 @@ namespace EGiftStore.Controllers
             {
                 switch (status.StatusCode)
                 {
-                    case 204: return NoContent();
+                    case 204: await _cacheService.RemoveCacheAsync(HttpContext.Request.Path.ToString()); return NoContent();
                     case 400: return BadRequest(new { Message = "ProductId invalid" });
                     case 500: return StatusCode(StatusCodes.Status500InternalServerError);
                 }
             }
+            
             return BadRequest();
         }
     }

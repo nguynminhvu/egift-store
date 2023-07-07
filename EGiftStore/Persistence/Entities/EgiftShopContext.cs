@@ -204,7 +204,7 @@ public partial class EgiftShopContext : DbContext
                 .HasMaxLength(100)
                 .IsUnicode(false);
             entity.Property(e => e.Url)
-                .HasMaxLength(100)
+                .HasMaxLength(500)
                 .IsUnicode(false);
 
             entity.HasOne(d => d.Product).WithMany(p => p.ProductImages)

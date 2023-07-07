@@ -16,7 +16,11 @@ namespace EGiftStore.Controllers
             _adminService = admin;
         }
 
-
+        /// <summary>
+        /// Login admin account
+        /// </summary>
+        /// <param name="am">Username and password</param>
+        /// <returns>Accress Token</returns>
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> AdminLogin(AuthenticationLoginModel am)

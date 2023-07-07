@@ -21,7 +21,7 @@ namespace EGiftStore
             builder.Services.AddDbContext<EgiftShopContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("EGiftDb"))
             );
-            builder.Services.AddDependenceInjection();
+            builder.Services.AddDependenceInjection(builder.Configuration);
             builder.Services.AddAutoMapper(typeof(MapperConfig));
             var app = builder.Build();
             // Configure the HTTP request pipeline.

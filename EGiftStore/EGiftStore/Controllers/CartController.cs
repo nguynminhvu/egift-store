@@ -17,7 +17,11 @@ namespace EGiftStore.Controllers
         {
             _cartService = cartService;
         }
-
+        /// <summary>
+        /// Add to cart
+        /// </summary>
+        /// <param name="acm"></param>
+        /// <returns></returns>
         [HttpPost]
         [AuthConfig("Customer")]
         public async Task<IActionResult> AddToCart(AddToCartModel acm)
@@ -39,7 +43,11 @@ namespace EGiftStore.Controllers
             return Unauthorized(new { Message = "Unauthorized" });
         }
 
-
+        /// <summary>
+        /// Update cart
+        /// </summary>
+        /// <param name="cum"></param>
+        /// <returns></returns>
         [HttpPut]
         [AuthConfig("Customer")]
         public async Task<IActionResult> UpdateCart(CartUpdateModel cum)
@@ -60,7 +68,10 @@ namespace EGiftStore.Controllers
             return Unauthorized(new { Message = "Unauthorized" });
         }
 
-
+        /// <summary>
+        /// Get cart item
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [AuthConfig("Customer")]
         public async Task<IActionResult> GetCartItem()

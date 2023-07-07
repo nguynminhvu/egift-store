@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,8 +16,10 @@ namespace Persistence.ViewModel.Request
         public string Description { get; set; } = null!;
 
         public int Stock { get; set; }
-        public List<Guid> CategoryId { get; set; }
-        public List<string> ImageUrl { get; set; }
+
+        public List<Guid> CategoryIds { get; set; }
+
+        public List<IFormFile> IFormFiles { get; set; } = new List<IFormFile>();
 
     }
 }
