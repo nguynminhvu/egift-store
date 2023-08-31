@@ -15,14 +15,38 @@ namespace EGiftStore.MiddlewareInvoke
         public static void AddDependenceInjection(this IServiceCollection services, IConfiguration configuration)
         {
             var redisConfiguration = new RedisConfiguration();
+            var redisClusterConfiguration = new RedisClusterConfiguration();
+
+            // Cluster
+            // Binding value from Section RedisClusterConfiguration to Object type RedisClusterConfiguration
+            configuration.GetSection("RedisClusterConfiguration").Bind(redisClusterConfiguration);
+
+            // Single
+            // Binding value from Section RedisConfiguration to Object type RedisConfiguration
             configuration.GetSection("RedisConfiguration").Bind(redisConfiguration);
+
+            // Check binding enable
             services.AddSingleton(redisConfiguration);
-            if (!redisConfiguration.Enable)
+            if (!redisConfiguration.Enable || !redisClusterConfiguration.Enable)
             {
                 return;
             }
-            services.AddSingleton<IConnectionMultiplexer>(x => ConnectionMultiplexer.Connect(redisConfiguration.ConnectionString));
-            services.AddStackExchangeRedisCache(option => option.Configuration = redisConfiguration.ConnectionString);
+            Console.WriteLine("ConnectionString Redis: " + redisConfiguration.ConnectionString);
+
+
+            #region Cluster
+            foreach (var item in redisClusterConfiguration.RedisClusters)
+            {
+                services.AddSingleton<IConnectionMultiplexer>(x => ConnectionMultiplexer.Connect(item));
+                services.AddStackExchangeRedisCache(option => option.Configuration = item);
+            }
+            #endregion
+
+
+            #region Single
+            //  services.AddSingleton<IConnectionMultiplexer>(x => ConnectionMultiplexer.Connect(redisConfiguration.ConnectionString));
+            //  services.AddStackExchangeRedisCache(option => option.Configuration = redisConfiguration.ConnectionString);
+            #endregion
             services.AddSingleton<ICacheService, CacheService>();
             services.AddScoped<IUnitIOfWork, UnitIOfWork>();
             services.AddScoped<ICustomerService, CustomerService>();
