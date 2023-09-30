@@ -39,24 +39,12 @@ namespace Service.Implement
             {
                 throw new ArgumentException("Pattern cannot be null or empty");
             }
-            await foreach (var key in GetKeyAsync(pattern + "*"))
-            {
-                await _distributedCache.RemoveAsync(key);
-            }
-        }
-
-        private async IAsyncEnumerable<string> GetKeyAsync(string pattern)
-        {
-            if (string.IsNullOrWhiteSpace(pattern))
-            {
-                throw new ArgumentException("Pattern cannot be null or empty");
-            }
             foreach (var endPoint in _connectionMutiplexer.GetEndPoints())
             {
                 var server = _connectionMutiplexer.GetServer(endPoint);
-                foreach (var key in server.Keys(pattern: pattern))
+                await foreach (var key in server.KeysAsync(pattern: pattern))
                 {
-                    yield return key.ToString();
+                    await _distributedCache.RemoveAsync(key.ToString());
                 }
             }
         }

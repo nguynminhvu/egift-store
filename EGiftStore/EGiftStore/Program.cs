@@ -7,6 +7,7 @@ using Persistence.Entities;
 using Persistence.Mapper;
 using Swashbuckle.AspNetCore.Filters;
 
+using EGiftStore.RateLimit.RateConfig;
 namespace EGiftStore
 {
     public class Program
@@ -21,6 +22,8 @@ namespace EGiftStore
             builder.Services.AddDbContext<EgiftShopContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("EGiftDb"))
             );
+
+            builder.Services.UseRateLimit();
             builder.Services.AddDependenceInjection(builder.Configuration);
             builder.Services.AddAutoMapper(typeof(MapperConfig));
             var app = builder.Build();
@@ -30,6 +33,7 @@ namespace EGiftStore
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            app.UseRateLimiter();
             app.UseHttpsRedirection();
 
             app.UseAuthorization();

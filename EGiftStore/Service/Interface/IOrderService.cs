@@ -8,11 +8,13 @@ using System.Threading.Tasks;
 
 namespace Service.Interface
 {
-	public interface IOrderService
-	{
-		public Task<IActionResult> CreateOrder(Guid customerId, CartViewModel cvm);
-		public Task<IActionResult> UpdateOrder(Guid orderId, string status);
-		public Task<OrderViewModel> GetOrderById(Guid id);
-		public Task<List<OrderViewModel>> GetOrders(Guid customerId);
-	}
+    public interface IOrderService
+    {
+        Task<IActionResult> CreateOrder(Guid customerId, CartViewModel cvm);
+        Task<IActionResult> UpdateOrder(Guid orderId, string status);
+        Task<OrderViewModel> GetOrderById(Guid id);
+        Task<List<OrderViewModel>> GetOrders(Guid customerId);
+       //Task<IActionResult> CreateOrderTransaction(Guid customerId, CartViewModel cvm);
+
+    }
 }

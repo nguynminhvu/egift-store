@@ -1,6 +1,8 @@
 ﻿using EGiftStore.MiddlewareInvoke.Invoke;
+using EGiftStore.RateLimit.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Persistence.ViewModel.Request;
 using Service.Interface;
 
@@ -41,6 +43,7 @@ namespace EGiftStore.Controllers
         /// <returns></returns>
         [HttpGet]
         [Cache(10000)]
+        [EnableRateLimiting(RateLimitOption.MyLimiter)]
         public async Task<IActionResult> GetProducts([FromQuery] ProductFilterModel productFilterModel)
         {
             var rs = await _productService.GetProducts(productFilterModel);
