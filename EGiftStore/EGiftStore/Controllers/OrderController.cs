@@ -24,14 +24,15 @@ namespace EGiftStore.Controllers
             _orderDetailService = orderDetailService;
             _productService = productService;
         }
+
+
         /// <summary>
         /// Create order
         /// </summary>
         /// <param name="cartId"></param>
         /// <returns></returns>
         [HttpPost]
-        [AuthConfig("Customer")]
-        public async Task<IActionResult> CreateOrder(Guid cartId)
+        public async Task<IActionResult> CreateOrderTransaction(Guid cartId)
         {
             var id = HttpContext.Items["Id"]!.ToString();
             if (id != null)
@@ -41,28 +42,58 @@ namespace EGiftStore.Controllers
                 if (cart == null || cart.CartItems.Count < 0)
                 {
                     return BadRequest(new { Message = "cart empty" });
-
                 }
-                if (await _productService.CheckStock(cart) is false)
+                var orderCreated = await _orderService.CreateOrder(customerId, cart);
+                if (orderCreated is JsonResult json)
                 {
-                    return BadRequest(new { Message = "quantity product out of stock" });
+                    return Ok(json.Value);
                 }
-                if (await _cartService.ClearCart(cartId) is false)
-                {
-                    return BadRequest(new { Message = "problem with cart" });
-                }
-                var orderJson = await _orderService.CreateOrder(customerId, cart);
-                if (orderJson is JsonResult jsonResult)
-                {
-                    var order = jsonResult.Value as OrderViewModel;
-                    return await _orderDetailService.CreateOrderDetail(order!.Id, cart) ? new JsonResult(await _orderService.GetOrderById(order.Id)) : StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Can't create Order Detail" }); ;
-                }
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Can't create Order" });
+                return BadRequest();
             }
-            string path = HttpContext.Request.Path.ToString();
-            await _cacheService.RemoveCacheAsync(path);
-            return Unauthorized(new { Message = "Unauthorized" });
+            return BadRequest(new { Message = "Unauthorize" });
         }
+
+        #region Old
+        ///// <summary>
+        ///// Create order
+        ///// </summary>
+        ///// <param name="cartId"></param>
+        ///// <returns></returns>
+        //[HttpPost]
+        //[AuthConfig("Customer")]
+        //public async Task<IActionResult> CreateOrder(Guid cartId)
+        //{
+        //    var id = HttpContext.Items["Id"]!.ToString();
+        //    if (id != null)
+        //    {
+        //        Guid customerId = Guid.Parse(id);
+        //        var cart = (await _cartService.GetCartItems(customerId) as JsonResult)!.Value as CartViewModel;
+        //        if (cart == null || cart.CartItems.Count < 0)
+        //        {
+        //            return BadRequest(new { Message = "cart empty" });
+
+        //        }
+        //        if (await _productService.CheckStock(cart) is false)
+        //        {
+        //            return BadRequest(new { Message = "quantity product out of stock" });
+        //        }
+        //        if (await _cartService.ClearCart(cartId) is false)
+        //        {
+        //            return BadRequest(new { Message = "problem with cart" });
+        //        }
+        //        var orderJson = await _orderService.CreateOrder(customerId, cart);
+        //        if (orderJson is JsonResult jsonResult)
+        //        {
+        //            var order = jsonResult.Value as OrderViewModel;
+        //            return await _orderDetailService.CreateOrderDetail(order!.Id, cart) ? new JsonResult(await _orderService.GetOrderById(order.Id)) : StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Can't create Order Detail" }); ;
+        //        }
+        //        return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Can't create Order" });
+        //    }
+        //    string path = HttpContext.Request.Path.ToString();
+        //    await _cacheService.RemoveCacheAsync(path);
+        //    return Unauthorized(new { Message = "Unauthorized" });
+        //}
+        #endregion
 
         /// <summary>
         /// Get order by customer id

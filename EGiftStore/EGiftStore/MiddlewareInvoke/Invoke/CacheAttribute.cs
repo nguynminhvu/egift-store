@@ -35,13 +35,13 @@ namespace EGiftStore.MiddlewareInvoke.Invoke
                     ContentType = "application/json",
                     StatusCode = 200
                 };
-                context.Result = contentResult  ;
+                context.Result = contentResult;
                 return;
             }
             var executedContext = await next();
             if (executedContext.Result is OkObjectResult oor)
             {
-                await cacheService.SetCacheAsync(cacheKey, oor, TimeSpan.FromSeconds(_timeSpanSecond));
+                await cacheService.SetCacheAsync(cacheKey, oor?.Value!, TimeSpan.FromSeconds(_timeSpanSecond));
             }
         }
 

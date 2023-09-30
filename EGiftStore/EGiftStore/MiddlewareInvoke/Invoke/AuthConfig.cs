@@ -26,13 +26,6 @@ namespace EGiftStore.MiddlewareInvoke.Invoke
             }
             else
             {
-                var expired = (DateTime)(expiredRaw);
-                int expireToken = expired.AddDays(7).Day - DateTime.Now.Day;
-                if (expireToken < 0)
-                {
-                    context.Result = new JsonResult(new { Message = "Token Expired" }) { StatusCode = 401 };
-                    return;
-                }
                 if (!Roles.Contains(role.ToString()!))
                 {
                     context.Result = new JsonResult(new { Message = "Forbidden" }) { StatusCode = 403 };

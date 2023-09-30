@@ -1,4 +1,5 @@
-﻿using Repository.Repositories.Interface;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using Repository.Repositories.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,5 +20,6 @@ namespace Repository
 		public IOrderDetailRepository OrderDetailRepository { get; }
 		IOrderRepository OrderRepository { get; }
 		Task<int> SaveChangesAsync();
-	}
+        IDbContextTransaction Transaction();
+    }
 }
